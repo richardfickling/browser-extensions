@@ -77,17 +77,14 @@ forge.message.broadcast = function(type, content, callback, error) {
 	chrome.windows.getAll({populate: true}, function (windows) {
 		windows.forEach(function (win) {
 			win.tabs.forEach(function (tab) {
-				//skip hosted pages
-				if (tab.url.indexOf('chrome-extension:') != 0) {
-					var port = chrome.tabs.connect(tab.id);
-					if (callback) {
-						port.onMessage.addListener(function (message) {
-							// this is a reply from a recipient non-privileged page
-							callback(message);
-						});
-					}
-					port.postMessage({type: type, content: content});
+				var port = chrome.tabs.connect(tab.id);
+				if (callback) {
+					port.onMessage.addListener(function (message) {
+						// this is a reply from a recipient non-privileged page
+						callback(message);
+					});
 				}
+				port.postMessage({type: type, content: content});
 			})
 		});
 	});
